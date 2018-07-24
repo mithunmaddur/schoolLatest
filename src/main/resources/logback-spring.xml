@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="LOG_DIR" value="logs"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level [%thread] %logger{36} | %L | %X{requestId} | %X{ptoId} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${LOG_DIR}/transit-service.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+       %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]  %logger{36} | %L | %X{requestId}  %X{ptoId} - %msg%n
+      </Pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="dev">
+    <root level="info">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </root>
+    <logger name="com.transit" additivity="false" level="debug">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </logger>
+  </springProfile>
+
+  <springProfile name="prod">
+    <root level="info">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </root>
+    <root level="error">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </root>
+    <logger name="com.transit" additivity="false" level="error">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </logger>
+    <logger name="com.transit" additivity="false" level="debug">
+      <appender-ref ref="SAVE-TO-FILE"/>
+    </logger>
+  </springProfile>
+
+</configuration>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
+  <property name="LOG_PATH" value="logs"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]  %logger{36} | %L | %X{requestId} | %X{ptoId} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${LOG_PATH}/transit-service-1.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]  %logger{36} | %L | %X{requestId} | %X{ptoId} - %msg%n
+      </Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SAVE-TO-FILE"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_PATH}/transit-service.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss} %-5level [%thread]  %logger{36} | %L | %X{requestId} | %X{ptoId} - %msg%n
+      </Pattern>
+    </encoder>
+
+    <!-- Comment out rolling policies to test how the remaining one works -->
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>
+        ${LOG_PATH}/archived/transit-service.%d{dd-MM-yyyy}.log
+      </fileNamePattern>
+      <maxHistory>50</maxHistory>
+      <totalSizeCap>500MB</totalSizeCap>
+    </rollingPolicy>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- rollover daily & on size-->
+      <maxFileSize>1024MB</maxFileSize>
+      <fileNamePattern>
+        ${LOG_PATH}/archived/transit-service_%d{dd-MM-yyyy}_%i.log
+      </fileNamePattern>
+      <maxHistory>100</maxHistory>
+      <totalSizeCap>4096MB</totalSizeCap>
+    </rollingPolicy>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>
+        ${LOG_PATH}/transit-service_%i.log
+      </fileNamePattern>
+      <minIndex>2</minIndex>
+      <maxIndex>50</maxIndex>
+    </rollingPolicy>
+
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <!-- rollover on size-->
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+
+  </appender>
+
+  <!--<root level="debug">-->
+  <root level="ON">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="SAVE-TO-FILE"/>
+  </root>
+
+  <logger name="com.transit" additivity="false" level="info">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="SAVE-TO-FILE"/>
+  </logger>
+  <logger name="com.transit" additivity="false" level="error">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="SAVE-TO-FILE"/>
+  </logger>
+
+  <!--<logger name="org.springframework.boot.SpringApplication" level="debug">-->
+  <!--<appender-ref ref="STDOUT" />-->
+  <!--</logger>-->
+</configuration>
